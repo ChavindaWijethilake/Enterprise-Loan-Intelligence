@@ -33,6 +33,29 @@ diagnose_sendgrid.py
 debug_env.py
 tmp_*
 
+# VS Code & IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs & Monitoring
+*.log
+logs/
+
+# Unit test / Coverage reports
+htmlcov/
+.tox/
+.nosearch
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
 # Documentation & Build
 build/
 dist/
