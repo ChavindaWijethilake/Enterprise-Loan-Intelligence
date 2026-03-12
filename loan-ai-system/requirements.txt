@@ -1,0 +1,35 @@
+# ============================================
+# Automated Enterprise Loan Approval System
+# Python Dependencies
+# ============================================
+# Install all: pip install -r requirements.txt
+# ============================================
+
+# --- Data Processing ---
+pandas==2.2.3
+numpy==2.2.3
+
+# --- Machine Learning ---
+scikit-learn==1.6.1
+xgboost==2.1.4
+joblib==1.4.2
+
+# --- Visualization ---
+matplotlib==3.10.1
+seaborn==0.13.2
+
+# --- API Server ---
+fastapi==0.115.12
+uvicorn==0.34.0
+
+# --- Database ---
+psycopg2-binary==2.9.10
+
+# --- Environment Variables ---
+python-dotenv==1.1.0
+
+# --- LLM (OpenAI) ---
+openai==1.68.0
+
+# --- Jupyter Notebooks (optional) ---
+jupyter==1.1.1
