@@ -1,0 +1,40 @@
+# Bytes-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Data and Notebooks
+.ipynb_checkpoints/
+data/*.csv
+!data/sample_loan_data.csv
+
+# Models
+models/*.pkl
+
+# Internal Tools & Debugging
+intercepted_emails/
+mail_service/intercepted_emails/*.html
+diag_output.txt
+simple_debug.py
+check_scopes.py
+final_test.py
+diagnose_sendgrid.py
+debug_env.py
+tmp_*
+
+# Documentation & Build
+build/
+dist/
+*.egg-info/
+documentation/Project_Documentation.docx
