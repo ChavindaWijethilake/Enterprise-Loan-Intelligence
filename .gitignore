@@ -61,3 +61,15 @@ build/
 dist/
 *.egg-info/
 documentation/Project_Documentation.docx
+
+# Node.js & Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.vsc-test-results
