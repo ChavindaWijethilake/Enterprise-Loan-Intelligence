@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.join(BASE_DIR, "..")
 sys.path.insert(0, PROJECT_DIR)
 
-from src.database import get_connection
+from src.db_service import get_connection
 
 
 def create_tables():

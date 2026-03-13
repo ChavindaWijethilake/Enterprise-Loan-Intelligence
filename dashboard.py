@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
-from src.database import get_connection
+from src.db_service import get_connection
 
 # Page configuration
 st.set_page_config(
@@ -110,9 +110,10 @@ if apps_df is not None and not apps_df.empty:
         display_df['email_sent'] = False
 
     # Format dataframe for display
-    display_df = display_df[['loan_id', 'applicant_name', 'loan_amount', 'cibil_score', 'status', 'probability', 'created_at']]
+    display_df = display_df[['loan_id', 'applicant_name', 'applicant_email', 'loan_amount', 'cibil_score', 'status', 'probability', 'email_sent', 'created_at']]
     display_df['loan_amount'] = display_df['loan_amount'].apply(lambda x: f"₹{x:,.0f}")
     display_df['probability'] = display_df['probability'].apply(lambda x: f"{x:.2%}" if pd.notnull(x) else "N/A")
+    display_df['email_sent'] = display_df['email_sent'].apply(lambda x: "✅ Sent" if x is True else "❌ Not Sent")
     
     st.dataframe(display_df, use_container_width=True)
 
