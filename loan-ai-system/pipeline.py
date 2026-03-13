@@ -31,6 +31,7 @@ sys.path.insert(0, BASE_DIR)
 from src.predict import predict_loan
 from llm.email_generator import generate_email
 from mail_service.email_sender import send_email
+from src.db_service import save_loan_application, save_loan_prediction
 
 
 def process_loan_application(applicant):
@@ -96,60 +97,24 @@ def process_loan_application(applicant):
     # ------------------------------------------------------------------
     print("  [4/4] Storing result in database...")
     try:
-        from src.database import get_connection
-
-        connection = get_connection()
-        if connection:
-            cursor = connection.cursor()
-
-            # Insert the application
-            cursor.execute(
-                """INSERT INTO loan_applications
-                   (applicant_name, applicant_email, no_of_dependents, education,
-                    self_employed, income_annum, loan_amount, loan_term, cibil_score,
-                    residential_assets_value, commercial_assets_value,
-                    luxury_assets_value, bank_asset_value, status)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                   RETURNING loan_id""",
-                (
-                    name,
-                    email_address,
-                    applicant["no_of_dependents"],
-                    applicant["education"],
-                    applicant["self_employed"],
-                    applicant["income_annum"],
-                    applicant["loan_amount"],
-                    applicant["loan_term"],
-                    applicant["cibil_score"],
-                    applicant["residential_assets_value"],
-                    applicant["commercial_assets_value"],
-                    applicant["luxury_assets_value"],
-                    applicant["bank_asset_value"],
-                    result["decision"],
-                ),
+        # Prepare data for save_loan_application (add back name and email)
+        applicant_data = applicant.copy()
+        applicant_data["applicant_name"] = name
+        applicant_data["applicant_email"] = email_address
+        
+        loan_id = save_loan_application(applicant_data, result["decision"])
+        
+        if loan_id:
+            save_loan_prediction(
+                loan_id=loan_id,
+                status=result["decision"],
+                probability=result["approval_probability"],
+                email_sent=email_sent
             )
-            loan_id = cursor.fetchone()[0]
-
-            # Insert the prediction
-            cursor.execute(
-                """INSERT INTO loan_predictions
-                   (loan_id, model_used, prediction, probability, email_sent)
-                   VALUES (%s, %s, %s, %s, %s)""",
-                (
-                    loan_id,
-                    "XGBoost",
-                    result["decision"],
-                    result["approval_probability"],
-                    email_sent,
-                ),
-            )
-
-            connection.commit()
-            cursor.close()
-            connection.close()
             print(f"        ✅ Saved to database (loan_id: {loan_id})")
         else:
-            print("        ⚠️  Database not available — skipping")
+            print("        ⚠️  Database save failed — check logs")
+            
     except Exception as e:
         print(f"        ⚠️  Database storage skipped: {e}")
     print()

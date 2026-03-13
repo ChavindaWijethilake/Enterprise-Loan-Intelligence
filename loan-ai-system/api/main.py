@@ -32,6 +32,7 @@ import joblib
 
 from llm.email_generator import generate_email
 from mail_service.email_sender import send_email
+from src.db_service import save_loan_application, save_loan_prediction
 
 # ---------------------------------------------------------------------------
 # Initialize FastAPI app
@@ -188,6 +189,22 @@ def predict_loan(application: LoanApplication):
     except Exception as e:
 
         email_content = f"[Email generation failed: {str(e)}. Check OPENAI_API_KEY]"
+
+    # -----------------------------------------------------------------------
+    # Database persistence
+    # -----------------------------------------------------------------------
+    try:
+        loan_id = save_loan_application(application.model_dump(), decision)
+        if loan_id:
+            save_loan_prediction(
+                loan_id=loan_id,
+                status=decision,
+                probability=approval_prob,
+                email_sent=bool(application.applicant_email)
+            )
+            print(f"✅ Saved application to database (ID: {loan_id})")
+    except Exception as db_err:
+        print(f"⚠️ Database storage failed: {db_err}")
 
     # Return API response
     return PredictionResponse(
