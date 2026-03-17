@@ -17,7 +17,7 @@ The system is divided into four main layers:
 - **Role**: The "Messenger".
 - **Function**: 
     - Uses OpenAI's GPT models to generate human-like email text.
-    - Uses SendGrid (or Sandbox Mode) to handle email delivery.
+    - Uses standard SMTP (via Gmail App Passwords typically) to handle secure email delivery on port 465.
 - **Key File**: `llm/email_generator.py`, `mail_service/email_sender.py`
 
 ### 4. The Data Layer (PostgreSQL)
@@ -26,8 +26,8 @@ The system is divided into four main layers:
 - **Key File**: `src/database.py`, `src/create_table.py`
 
 ## Data Flow Diagram
-1. **Input**: User POSTs data to `/predict`.
-2. **Predict**: ML Model analyzes the numbers → returns `APPROVED` or `REJECTED`.
-3. **Store**: Results are saved to the PostgreSQL `loan_applications` and `loan_predictions` tables.
-4. **Notify**: LLM creates personalized text → Email service delivers it (or saves to `intercepted_emails`).
-5. **View**: The Streamlit Dashboard fetches data from SQL to show live status.
+1. **Apply**: User submits the frontend web form to `POST /api/apply`.
+2. **Pending**: Application is saved to PostgreSQL `loan_applications` with a PENDING status.
+3. **Review**: Admin opens the Streamlit Dashboard, sees the pending application, and clicks an action.
+4. **Process**: The dashboard calls either `/api/process-auto/{id}` (uses ML Model) or `/api/process-manual/{id}` (human override). Result is saved to `loan_predictions`.
+5. **Notify**: LLM creates personalized text → SMTP service securely emails the applicant the decision.

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Loan Portal | Apply</title>
+    <!-- Tailwind CSS for rapid modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f1f5f9;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-attachment: fixed;
+            color: #1e293b;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .input-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .input-transition:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1), 0 4px 6px -2px rgba(37, 99, 235, 0.05);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+
+    <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden relative z-10 animate-fade-in-up">
+        
+        <!-- Header -->
+        <div class="bg-white/50 border-b border-gray-200 p-6 sm:p-10 text-center">
+            <h1 class="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Apply for a Corporate Loan</h1>
+            <p class="text-gray-500 max-w-2xl mx-auto">Fill out the details below. Our AI-driven system will review your application and process it efficiently.</p>
+        </div>
+
+        <!-- Progress Alert -->
+        <div id="alertBox" class="hidden mx-6 sm:mx-10 mt-6 p-4 rounded-lg flex items-start">
+            <div id="alertIcon" class="mr-3 mt-0.5"></div>
+            <div>
+                <h3 id="alertTitle" class="font-semibold"></h3>
+                <p id="alertMessage" class="text-sm mt-1"></p>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form id="loanForm" class="p-6 sm:p-10 space-y-8">
+            
+            <!-- Section 1: Personal/Business Info -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Applicant Details</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name / Company Name</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-regular fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text" id="applicant_name" required class="input-transition block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-regular fa-envelope text-gray-400"></i>
+                            </div>
+                            <input type="email" id="applicant_email" required class="input-transition block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Number of Dependents</label>
+                        <input type="number" id="no_of_dependents" min="0" max="10" required class="input-transition block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Education</label>
+                            <select id="education" required class="input-transition block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                                <option value="1">Graduate</option>
+                                <option value="0">Not Graduate</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Self Employed</label>
+                            <select id="self_employed" required class="input-transition block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Financial Details -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Financial Overview</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Annual Income (₹)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-gray-400 font-medium">₹</span></div>
+                            <input type="number" id="income_annum" min="1" required class="input-transition block w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">CIBIL Score</label>
+                        <input type="number" id="cibil_score" min="300" max="900" required class="input-transition block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Requested Loan Amount (₹)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-gray-400 font-medium">₹</span></div>
+                            <input type="number" id="loan_amount" min="1" required class="input-transition block w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Loan Term (Years)</label>
+                        <input type="number" id="loan_term" min="1" max="30" required class="input-transition block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Asset Declaration -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Asset Declaration (₹)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Residential</label>
+                        <input type="number" id="residential_assets_value" min="0" required class="input-transition block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Commercial</label>
+                        <input type="number" id="commercial_assets_value" min="0" required class="input-transition block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Luxury</label>
+                        <input type="number" id="luxury_assets_value" min="0" required class="input-transition block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Bank Balance</label>
+                        <input type="number" id="bank_asset_value" min="0" required class="input-transition block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500 bg-white/50">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-4 border-t border-gray-200">
+                <button type="submit" id="submitBtn" class="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all">
+                    <span>Submit Application</span>
+                </button>
+            </div>
+            
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const alertBox = document.getElementById('alertBox');
+            
+            // UI Loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loader mr-2"></div> Processing...';
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            alertBox.classList.add('hidden');
+
+            // Custom Frontend Validation
+            const cibil = parseInt(document.getElementById('cibil_score').value);
+            if (cibil < 300 || cibil > 900) {
+                showAlert('error', 'Invalid CIBIL Score', 'The CIBIL score must be between 300 and 900.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Submit Application</span>';
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                return;
+            }
+
+            // Gather Data
+            const payload = {
+                applicant_name: document.getElementById('applicant_name').value,
+                applicant_email: document.getElementById('applicant_email').value,
+                no_of_dependents: parseInt(document.getElementById('no_of_dependents').value),
+                education: parseInt(document.getElementById('education').value),
+                self_employed: parseInt(document.getElementById('self_employed').value),
+                income_annum: parseFloat(document.getElementById('income_annum').value),
+                loan_amount: parseFloat(document.getElementById('loan_amount').value),
+                loan_term: parseInt(document.getElementById('loan_term').value),
+                cibil_score: cibil,
+                residential_assets_value: parseFloat(document.getElementById('residential_assets_value').value),
+                commercial_assets_value: parseFloat(document.getElementById('commercial_assets_value').value),
+                luxury_assets_value: parseFloat(document.getElementById('luxury_assets_value').value),
+                bank_asset_value: parseFloat(document.getElementById('bank_asset_value').value),
+            };
+
+            try {
+                // Send to FastAPI /api/apply
+                const response = await fetch('/api/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('success', 'Application Submitted!', `Your reference ID is ${data.loan_id}. We will review your application shortly.`);
+                    document.getElementById('loanForm').reset();
+                } else {
+                    showAlert('error', 'Submission Failed', data.detail || 'An unexpected error occurred.');
+                }
+            } catch (error) {
+                showAlert('error', 'Network Error', 'Could not connect to the server. Please try again later.');
+            } finally {
+                // Reset Button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Submit Application</span>';
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        });
+
+        function showAlert(type, title, message) {
+            const box = document.getElementById('alertBox');
+            const icon = document.getElementById('alertIcon');
+            const titleEl = document.getElementById('alertTitle');
+            const msgEl = document.getElementById('alertMessage');
+
+            box.className = `mx-6 sm:mx-10 mt-6 p-4 rounded-lg flex items-start border ${
+                type === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'
+            }`;
+            
+            icon.innerHTML = type === 'success' 
+                ? '<i class="fa-solid fa-circle-check text-green-500 text-xl"></i>' 
+                : '<i class="fa-solid fa-triangle-exclamation text-red-500 text-xl"></i>';
+                
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            box.classList.remove('hidden');
+            
+            // Auto scroll to alert
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>

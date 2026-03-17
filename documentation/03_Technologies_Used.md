@@ -19,6 +19,6 @@
 *   **Plotly**: Powers the dynamic charts and visualizations in the dashboard.
 
 ## Cloud & Utilities
-*   **SendGrid**: Professional API for sending transactional emails.
+*   **smtplib (SSL)**: Secure standard library for sending transactional emails directly via SMTP (bypassing the need for paid API services).
 *   **Python-Dotenv**: Manages sensitive credentials (API keys, DB passwords) securely.
 *   **Python-Docx**: Used to generate automated Word reports.
