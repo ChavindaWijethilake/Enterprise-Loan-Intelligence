@@ -7,8 +7,8 @@
 
 ## Step 1: Environment Setup
 1.  Open the `.env` file in the project root.
-2.  Ensure your `DB_PASSWORD` and `SENDGRID_API_KEY` are correct.
-3.  Set `MAIL_MODE=SANDBOX` if you want to test without using email credits.
+2.  Ensure your PostgreSQL credentials are correct.
+3.  Add your Google App Password to `MAIL_PASSWORD` and set `MAIL_MODE=SMTP` to send real emails, or `MAIL_MODE=SANDBOX` to intercept them locally.
 
 ## Step 2: Initialize the Database
 Run the following command to create the necessary tables:
@@ -31,7 +31,8 @@ streamlit run dashboard.py
 Open your browser to: `http://localhost:8501`
 
 ## Step 5: Testing the System
-1.  Go to the API docs (/docs).
-2.  Use the **POST /predict** endpoint.
-3.  Enter sample applicant data and click **Execute**.
-4.  Check the `mail_service/intercepted_emails/` folder to see the result!
+1.  Open your browser to: `http://localhost:8000/` to view the Customer Application Portal.
+2.  Fill out the beautiful loan application form and submit it.
+3.  Go back to the Admin Dashboard at `http://localhost:8501`.
+4.  Under the "Pending Approvals" tab, you will see the new application.
+5.  Click either **Auto AI Decision** or a **Manual** button to process the loan and trigger the email dispatch!
