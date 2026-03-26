@@ -1,25 +1,28 @@
 # =============================================================================
-# email/email_sender.py
+# mail_service/email_sender.py
 # =============================================================================
-# PURPOSE: Send decision emails to loan applicants using SendGrid API.
+# PURPOSE: Send decision emails to loan applicants using SMTP (e.g., Gmail).
 #
 # HOW IT WORKS:
-#   1. Reads SENDGRID_API_KEY and FROM_EMAIL from .env
-#   2. Connects to SendGrid API
+#   1. Reads MAIL_USERNAME and MAIL_PASSWORD from .env
+#   2. Connects to the SMTP server (default Gmail)
 #   3. Sends email to the applicant
 #
 # REQUIRES:
-#   - sendgrid package
 #   - python-dotenv package
-#   - SENDGRID_API_KEY in .env
-#   - FROM_EMAIL in .env (must be verified in SendGrid)
+#   - MAIL_USERNAME in .env
+#   - MAIL_PASSWORD in .env
 # =============================================================================
 
 import os
+import smtplib
 import datetime
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from email.message import EmailMessage
+import mimetypes
 from dotenv import load_dotenv
+
+from src.logger import get_logger
+logger = get_logger("email_sender")
 
 # ---------------------------------------------------------------------------
 # Load environment variables
@@ -34,22 +37,46 @@ load_dotenv(ENV_PATH)
 # ---------------------------------------------------------------------------
 # Email Sending Function
 # ---------------------------------------------------------------------------
-def send_email(recipient_email: str, subject: str, body: str) -> bool:
+def send_email(recipient_email: str, subject: str, body: str, attachment_path: str = None) -> bool:
     """
-    Send email using SendGrid API.
+    Send email using standard SMTP.
 
     Args:
         recipient_email (str): recipient email address
         subject (str): email subject
         body (str): email body (HTML supported)
+        attachment_path (str, optional): absolute path to a file to attach
 
     Returns:
         bool: True if sent successfully, False otherwise
     """
+    
+    mail_username = os.getenv("MAIL_USERNAME", "").strip()
+    mail_password = os.getenv("MAIL_PASSWORD", "").strip()
+    mail_server = os.getenv("MAIL_SERVER", "smtp.gmail.com").strip()
+    mail_port = int(os.getenv("MAIL_PORT", "587"))
+    mail_mode = os.getenv("MAIL_MODE", "SMTP").upper().strip()
 
-    api_key = os.getenv("SENDGRID_API_KEY", "").strip()
-    sender_email = os.getenv("FROM_EMAIL", "").strip()
-    mail_mode = os.getenv("MAIL_MODE", "SENDGRID").upper().strip()
+    # Apply HTML Branded Template
+    html_body = f"""
+    <html>
+      <body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #0b5cff; margin: 0;">Enterprise Bank</h1>
+            <p style="color: #666; margin: 5px 0;">Automated Loan Operations</p>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #eaeaea; margin: 20px 0;">
+        <div style="line-height: 1.6; font-size: 16px;">
+            {body}
+        </div>
+        <hr style="border: 0; border-top: 1px solid #eaeaea; margin: 20px 0;">
+        <div style="text-align: center; font-size: 12px; color: #999;">
+            <p>This is an automated message. Please do not reply directly to this email.</p>
+            <p>&copy; {datetime.datetime.now().year} Enterprise Bank. All rights reserved.</p>
+        </div>
+      </body>
+    </html>
+    """
 
     # -----------------------------------------------------------------------
     # SANDBOX MODE: Save to local file
@@ -67,54 +94,65 @@ def send_email(recipient_email: str, subject: str, body: str) -> bool:
         
         try:
             with open(filepath, "w", encoding="utf-8") as f:
-                f.write(f"<!-- FROM: {sender_email} -->\n")
+                f.write(f"<!-- FROM: {mail_username} -->\n")
                 f.write(f"<!-- TO: {recipient_email} -->\n")
                 f.write(f"<!-- SUBJECT: {subject} -->\n")
+                if attachment_path:
+                    f.write(f"<!-- ATTACHMENT: {attachment_path} -->\n")
                 f.write("<hr>\n")
-                f.write(body)
+                f.write(html_body)
             
-            print(f"📦 SANDBOX MODE: Email captured locally!")
-            print(f"   File: {filepath}")
+            logger.info(f"SANDBOX MODE: Email captured locally! File: {filepath}")
             return True
         except Exception as e:
-            print(f"❌ SANDBOX MODE ERROR: {e}")
+            logger.error(f"SANDBOX MODE ERROR: {e}")
             return False
 
     # -----------------------------------------------------------------------
-    # SENDGRID MODE: Actual sending
+    # SMTP MODE: Actual sending
     # -----------------------------------------------------------------------
 
     # Check configuration
-    if not api_key:
-        print("❌ SENDGRID_API_KEY not found in .env")
-        return False
-
-    if not sender_email:
-        print("❌ FROM_EMAIL not found in .env")
+    if not mail_username or not mail_password:
+        logger.error("MAIL_USERNAME or MAIL_PASSWORD not found in .env")
         return False
 
     try:
-        message = Mail(
-            from_email=sender_email,
-            to_emails=recipient_email,
-            subject=subject,
-            html_content=body
-        )
+        msg = EmailMessage()
+        msg.set_content(html_body, subtype='html')
+        msg['Subject'] = subject
+        msg['From'] = mail_username
+        msg['To'] = recipient_email
 
-        print("Connecting to SendGrid API...")
-        sg = SendGridAPIClient(api_key)
+        if attachment_path and os.path.exists(attachment_path):
+            ctype, encoding = mimetypes.guess_type(attachment_path)
+            if ctype is None or encoding is not None:
+                ctype = 'application/octet-stream'
+            maintype, subtype = ctype.split('/', 1)
+            with open(attachment_path, 'rb') as fp:
+                msg.add_attachment(fp.read(),
+                                   maintype=maintype,
+                                   subtype=subtype,
+                                   filename=os.path.basename(attachment_path))
 
-        response = sg.send(message)
-
-        if response.status_code in [200, 202]:
-            print(f"✅ Email sent successfully to {recipient_email}")
-            return True
+        logger.info(f"Connecting to SMTP server {mail_server}:{mail_port}...")
+        
+        # Use SMTP_SSL for port 465, or standard SMTP for port 587
+        if mail_port == 465:
+            server = smtplib.SMTP_SSL(mail_server, mail_port)
         else:
-            print(f"❌ Failed with status code: {response.status_code}")
-            return False
+            server = smtplib.SMTP(mail_server, mail_port)
+            server.starttls()
+            
+        server.login(mail_username, mail_password)
+        server.send_message(msg)
+        server.quit()
+
+        logger.info(f"Email sent successfully to {recipient_email} via SMTP")
+        return True
 
     except Exception as e:
-        print(f"❌ Error sending email: {e}")
+        logger.error(f"Error sending email: {e}")
         return False
 
 
@@ -122,32 +160,25 @@ def send_email(recipient_email: str, subject: str, body: str) -> bool:
 # Test Script
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-
     print("=" * 60)
-    print("SENDGRID EMAIL TEST")
+    print("SMTP EMAIL TEST")
     print("=" * 60)
 
+    test_email = "your_email@gmail.com" # Swap if you want to hardcode for test
     subject = "Loan Application Decision — Test"
 
     body = """
     <h2>Automated Loan Processing System</h2>
-
     <p>Dear Applicant,</p>
-
     <p>This is a <b>test email</b> from the Automated Enterprise Loan Approval System.</p>
-
-    <p>Your loan application has been processed successfully by our AI system.</p>
-
-    <p>Thank you.</p>
-
+    <p>Your loan application has been processed successfully by our AI system via SMTP!</p>
     <br>
-
     <p>Best regards,<br>
     Loan Processing Department</p>
     """
 
     send_email(
-        recipient_email="your_email@gmail.com",
+        recipient_email=test_email,
         subject=subject,
         body=body
     )

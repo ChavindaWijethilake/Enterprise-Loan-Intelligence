@@ -9,31 +9,21 @@
 pandas==2.2.3
 numpy==2.2.3
 
-# --- Machine Learning & Analytics ---
+# --- Machine Learning ---
 scikit-learn==1.6.1
 xgboost==2.1.4
 joblib==1.4.2
-plotly==6.0.0
-
-# --- Testing ---
-pytest==8.3.5
-httpx==0.28.1
 
 # --- Visualization ---
 matplotlib==3.10.1
 seaborn==0.13.2
 
-# --- API & Web ---
+# --- API Server ---
 fastapi==0.115.12
 uvicorn==0.34.0
-streamlit==1.42.2
-requests==2.32.3
 
-# --- Document Generation ---
-fpdf==1.7.2
-
-# --- Security ---
-bcrypt==4.2.0
+# --- Database ---
+psycopg2-binary==2.9.10
 
 # --- Environment Variables ---
 python-dotenv==1.1.0
