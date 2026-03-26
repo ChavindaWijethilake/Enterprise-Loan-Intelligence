@@ -7,7 +7,7 @@ This is a smart system designed to automate the process of deciding whether a bu
 1. **Application**: A customer submits their details (Income, Assets, CIBIL Score, etc.) through an online form.
 2. **AI Decision**: Our Machine Learning "brain" looks at historical data and decides if the loan is "Safe" or "Risky".
 3. **Personalized Email**: An AI (like ChatGPT) writes a friendly, professional email explaining the decision.
-4. **Monitoring**: Managers can watch all decisions happening live on a beautiful dashboard.
+4. **Monitoring**: Managers can watch all decisions happening live on a beautiful, high-density dashboard (Version 2.0) with real-time portfolio tracking and **Rs.** currency formatting.
 
 ## Why use it?
 - **Speed**: Decisions are made in milliseconds, not weeks.

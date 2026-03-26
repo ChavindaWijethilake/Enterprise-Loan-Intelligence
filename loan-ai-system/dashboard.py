@@ -2,10 +2,10 @@
 # dashboard.py — Enterprise Loan AI Admin Dashboard
 # =============================================================================
 # PURPOSE:
-#   Industrial-themed Streamlit dashboard for monitoring, reviewing, and
-#   acting on loan applications. Features glassmorphism aesthetics, a
-#   collapsible sidebar with session-state-driven navigation, and five
-#   views: Overview, Credit Engine, Email Ops, Analytics, and Audit Log.
+#   Industrial-themed Streamlit dashboard (Version 2.0) for monitoring and
+#   acting on loan applications. Features premium glassmorphism, high-density
+#   grid layouts, and five institutional views: Overview, Credit Engine,
+#   Email Ops, Analytics, and Audit Log.
 #
 # RUN:
 #   streamlit run dashboard.py
@@ -49,14 +49,14 @@ if "p_page" not in st.session_state: st.session_state.p_page = 1
 if "password_correct" not in st.session_state: st.session_state.password_correct = False
 
 # ---------------------------------------------------------------------------
-# CUSTOM CSS — Industrial Glassmorphism Design System
+# CUSTOM CSS — Institutional Glassmorphism Design System (v2.0)
 # ---------------------------------------------------------------------------
-# CSS Variables (--fin-indigo, --fin-text-primary, etc.) and --sidebar-w
-# drive the entire theme. The sidebar width toggles between 72px (mini)
-# and 264px (full) based on session_state.sidebar_view. Key visual layers:
-#   1. Sidebar rail with brand header and radio-button navigation.
-#   2. Glassmorphism cards (backdrop-filter: blur) for metrics and tables.
-#   3. Responsive breakpoints at 1200px and 768px for tight layouts.
+# CSS Variables (--fin-indigo, --fin-text-primary, etc.) drive the theme.
+# Features a fixed-width institutional sidebar (264px) and high-density
+# grid layouts. Key visual layers:
+#   1. Sidebar rail with brand header and consistent navigation.
+#   2. Glassmorphism cards with left-accent bars and equal-height metrics.
+#   3. Zero-jitter container architecture for layout stability.
 # ---------------------------------------------------------------------------
 st.markdown(f"""
 <style>
