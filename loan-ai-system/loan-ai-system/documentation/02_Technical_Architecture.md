@@ -30,4 +30,4 @@ The system is divided into four main layers:
 2. **Predict**: ML Model analyzes the numbers → returns `APPROVED` or `REJECTED`.
 3. **Store**: Results are saved to the PostgreSQL `loan_applications` and `loan_predictions` tables.
 4. **Notify**: LLM creates personalized text → Email service delivers it (or saves to `intercepted_emails`).
-5. **View**: The Streamlit Dashboard fetches data from SQL to show live status.
+5. **View**: The Streamlit Dashboard (v2.0) fetches data via SQL, rendering modular page headers and high-density metric cards with **Rs.** currency standardization.

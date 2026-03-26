@@ -34,4 +34,5 @@ Open your browser to: `http://localhost:8501`
 1.  Go to the API docs (/docs).
 2.  Use the **POST /predict** endpoint.
 3.  Enter sample applicant data and click **Execute**.
-4.  Check the `mail_service/intercepted_emails/` folder to see the result!
+4.  Check the Admin Dashboard to see the application appear with **Rs.** currency formatting.
+5.  Check the `mail_service/intercepted_emails/` folder to see the result!
